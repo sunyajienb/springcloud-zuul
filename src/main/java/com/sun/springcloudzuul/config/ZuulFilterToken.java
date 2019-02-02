@@ -17,6 +17,15 @@ import javax.servlet.http.HttpServletRequest;
 @Component
 public class ZuulFilterToken extends ZuulFilter {
 
+    /**
+     * 请求头部标识
+     */
+    private static final String HEADER_TOKEN = "token";
+    /**
+     * token值
+     */
+    private static final String TOKEN_VALUE = "123";
+
     @Override
     public String filterType() {
         return FilterConstants.PRE_TYPE;
@@ -36,14 +45,14 @@ public class ZuulFilterToken extends ZuulFilter {
     public Object run() {
         RequestContext context = RequestContext.getCurrentContext();
         HttpServletRequest request = context.getRequest();
-        String token = request.getParameter("token");
+        String token = request.getHeader(HEADER_TOKEN);
         if (StringUtils.isBlank(token)) {
             context.setSendZuulResponse(false);
             context.setResponseStatusCode(401);
             context.setResponseBody("缺少token");
             context.getResponse().setContentType("text/html;charset=UTF-8");
         } else {
-            if (!"123".equals(token)) {
+            if (!TOKEN_VALUE.equals(token)) {
                 context.setSendZuulResponse(false);
                 context.setResponseStatusCode(401);
                 context.setResponseBody("token错误");
